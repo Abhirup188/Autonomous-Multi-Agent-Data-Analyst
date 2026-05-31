@@ -1,0 +1,14 @@
+# Environments
+venv/
+env/
+
+# Secrets & Credentials (CRITICAL)
+.env
+
+# Temporary Data
+Data/
+*.csv
+
+# Python Cache
+__pycache__/
+*.pyc
