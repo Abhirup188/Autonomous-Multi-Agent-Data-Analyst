@@ -10,7 +10,7 @@ Features
 * Interactive Visual Dashboards: The AI dynamically writes `plotly.express` code to generate interactive, hoverable charts based on its findings.
 * Real-World Automations: The pipeline automatically pushes anomalies and at-risk customer data to Make.com via Webhooks, triggering live Slack alerts and HubSpot CRM updates.
 
-🧠 System Architecture (LangGraph)
+System Architecture (LangGraph)
 1. Profiler Node: Extracts metadata, column headers, and statistical summaries from the raw CSV.
 2. Strategist Node: Generates highly targeted, actionable business hypotheses based purely on the metadata.
 3. Coder Node: Writes executable Python (`pandas`, `plotly`) to answer the hypotheses.
