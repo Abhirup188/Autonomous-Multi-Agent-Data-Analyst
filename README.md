@@ -22,5 +22,5 @@ Installation & Setup
 
 1. Clone the repository: 
    ```bash
-   git clone https://[github.com/Abhirup188/autonomous-multi-agent-data-analyst](https://github.com/Abhirup188/Autonomous-Multi-Agent-Data-Analyst).git
-   cd autonomous-data-analyst
+   git clone https://github.com/Abhirup188/Autonomous-Multi-Agent-Data-Analyst.git
+   cd Autonomous-Multi-Agent-Data-Analyst
