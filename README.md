@@ -18,6 +18,9 @@ System Architecture (LangGraph)
 5. Reporter Node: Synthesizes the raw mathematical outputs into a professional, executive Markdown report.
 6. Automator Node: Triggers third-party webhooks (Slack/CRM) for critical data anomalies.
 
+Demo Video:
+https://drive.google.com/file/d/1vmDhYVjrCfH3eJn1g9JYMzz-d104sGnJ/view?usp=sharing
+
 Installation & Setup
 
 1. Clone the repository: 
