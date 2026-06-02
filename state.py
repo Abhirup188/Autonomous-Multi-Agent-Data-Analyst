@@ -13,3 +13,4 @@ class AgentState(TypedDict):
     error_logs:Annotated[list,operator.add]
     automation_status:str
     figures: list
+    current_exec_status: str

@@ -107,6 +107,7 @@ def CoderNode(state: AgentState):
     Return ONLY raw Python code. No markdown backticks.
     9. FORBIDDEN LIBRARIES: You are strictly forbidden from importing or using 'statsmodels', 'scikit-learn', 'scipy', or 'seaborn'.
     10. ALLOWED LIBRARIES: You may ONLY use 'pandas' and 'plotly.express'. If you cannot solve a problem with these two, use standard Python math.
+    11. EXACT COLUMN NAMES: You MUST use the exact column names as shown in the 'COLUMN HEADERS' context. They are case-sensitive. Do not guess or modify column names.
     """
     try:
         result = structured_llm.invoke(prompt)
@@ -140,11 +141,15 @@ def executor_node(state: AgentState):
             "execution_results": str(local_vars.get('analysis_results', "No results.")),
             "anomalies": local_vars.get('anomalies_list', []),
             "at_risk_customers": local_vars.get('at_risk_customers_list', []),
-            "figures": json_figures
+            "figures": json_figures,
+            "current_exec_status": "success"
         }
     except Exception as e:
         print(f"Executor Node Error: {e}")
-        return {"error_logs": [f"Execution Error: {str(e)}"]}
+        return {
+            "error_logs": [f"Execution Error: {str(e)}"],
+            "current_exec_status": "failure"
+        }
 
 def Reporter_node(state: AgentState):
     hypotheses = state.get('hypotheses')

@@ -16,13 +16,13 @@ st.markdown("---")
 uploaded_file = st.file_uploader("Upload a CSV file to begin", type=["csv"])
 
 if uploaded_file is not None:
-    file_path = os.path.join(UPLOAD_DIR, uploaded_file.name)
+    file_path = os.path.join(UPLOAD_DIR, uploaded_file.name).replace("\\", "/") 
     with open(file_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
         
     st.success(f"Dataset securely staged at `{file_path}`. Ready for swarm ingestion.")
 
-    if st.button("🚀 Initialize Swarm", type="primary", use_container_width=True):
+    if st.button("🚀 Initialize Swarm", type="primary", width="stretch"):
 
         with st.spinner("Swarm initialized. Orchestrating agents... This may take a minute."):
             
@@ -62,7 +62,7 @@ if uploaded_file is not None:
                         # Rebuild the Plotly figure from the JSON string
                         fig = pio.from_json(fig_json) 
                         with cols[i % 2]:
-                            st.plotly_chart(fig, use_container_width=True)
+                            st.plotly_chart(fig, width="stretch")
                 else:
                     st.warning("No visual charts were generated for this dataset.")
 
@@ -77,7 +77,7 @@ if uploaded_file is not None:
                     data=report_content,
                     file_name="AI_Executive_Report.md",
                     mime="text/markdown",
-                    use_container_width=True
+                    width="stretch"
                 )
                 
                 st.markdown("---")

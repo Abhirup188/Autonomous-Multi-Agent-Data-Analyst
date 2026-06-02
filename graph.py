@@ -13,12 +13,18 @@ def should_continue_coder_executor(state:AgentState):
         return "continue"
     
 def executor_router(state: AgentState):
-    if state.get("error_logs"):
-        if len(state["error_logs"]) >= 3:
-            print("MAX RETRIES REACHED. ABORTING.")
-            return "end"
-        return "retry"
-    return "success"
+    status = state.get("current_exec_status")
+    if status == "success":
+        print("Execution Successful! Moving to Reporter.")
+        return "success"
+
+    errors = state.get("error_logs", [])
+    if len(errors) >= 3:
+        print("MAX RETRIES REACHED. ABORTING.")
+        return "end"
+        
+    print(f"Execution Failed. Routing back to Coder for self-healing (Attempt {len(errors)}/3)...")
+    return "retry"
 
 
 workflow = StateGraph(AgentState)
