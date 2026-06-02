@@ -17,9 +17,9 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 llm = ChatOpenAI(
-    model="gpt-4o-mini",
+    model="gpt-4o",
     api_key=OPENAI_API_KEY,
-    temperature=0.7
+    temperature=0.2
 )
 
 def profiler_node(state: AgentState):
@@ -94,20 +94,27 @@ def CoderNode(state: AgentState):
     2. Load the dataset using the exact File Path.
     3. Do NOT use `print()` statements. 
     4. Store analytical answers in a dictionary/string named exactly: `analysis_results`.
-    5. DATA ANOMALY DETECTION (CRITICAL): 
-    You MUST detect anomalies using the Z-Score method across ALL numeric columns.
-    - For every numeric column, calculate the mean and standard deviation.
-    - Flag a row as an anomaly if the value in ANY numeric column has an absolute Z-score > 3.0 (i.e., |(value - mean) / std| > 3.0).
-    - Store the unique 'OrderID' of these rows in a list named exactly: anomalies_list.
-    - If no rows meet this criteria, assign an empty list [].
-    - Do not use the IQR method; use Z-Score > 3.0.
-    6. Identify strictly at-risk customers (e.g., spending significantly below average) and store them in a list named exactly: at_risk_customers_list. If all customers are healthy, assign an empty list [].
-    7. VISUAL DASHBOARD: You MUST generate 2 to 3 interactive charts using `plotly.express` (e.g., bar charts, line charts, scatter plots) to visualize the data. Store the resulting Plotly figure objects in a Python list named exactly: `figures_list`.
-    8. When calculating statistics like mean, sum, or correlation, ALWAYS use numeric_only=True or explicitly select only numeric columns to avoid string conversion errors.
-    Return ONLY raw Python code. No markdown backticks.
-    9. FORBIDDEN LIBRARIES: You are strictly forbidden from importing or using 'statsmodels', 'scikit-learn', 'scipy', or 'seaborn'.
-    10. ALLOWED LIBRARIES: You may ONLY use 'pandas' and 'plotly.express'. If you cannot solve a problem with these two, use standard Python math.
-    11. EXACT COLUMN NAMES: You MUST use the exact column names as shown in the 'COLUMN HEADERS' context. They are case-sensitive. Do not guess or modify column names.
+    
+    5. DATA ANOMALY DETECTION (DYNAMIC): 
+    - You MUST detect anomalies using the Z-Score method across ALL numeric columns (> 3.0 or < -3.0).
+    - CRITICAL: Calculate Z-scores manually using Pandas: `(df[col] - df[col].mean()) / df[col].std()`. Do NOT use scipy.
+    - If you find an anomaly, create a human-readable string explaining exactly what the anomaly is.
+    - CRITICAL: NEVER use dataframe row numbers or the word "index". You MUST extract the exact Date, Platform, and Country from that row to provide business context.
+    - CRITICAL: You must limit your output to ONLY the TOP 5 most extreme anomalies. Store these in a list named exactly: anomalies_list. If data is clean, assign [].
+    
+    6. "AT-RISK" ENTITY DETECTION (DYNAMIC):
+    - Identify entities that are performing poorly based on the context of the data. If the dataset lacks 'Customers', evaluate campaigns, products, or regions.
+    - CRITICAL: You must limit your output to ONLY the TOP 5 worst-performing entities. Store descriptive strings in a list named exactly: at_risk_customers_list. Assign [] if none exist.
+    
+    7. VISUAL DASHBOARD: Generate 3 interactive Business Intelligence charts using plotly.express (e.g., Stacked Bar charts, Pie charts, Line graphs).
+    - CRITICAL: Do NOT generate academic statistical plots like Box Plots, Violin Plots, or Histograms. 
+    - CRITICAL: If you create a time-series line chart, you MUST aggregate (groupby) the data by date and sort it chronologically BEFORE plotting to prevent overlapping "spaghetti" lines.
+    - Store the Plotly figure objects in a list named exactly: figures_list.
+    
+    8. ALWAYS use numeric_only=True or explicitly select numeric columns for math.
+    9. Return ONLY raw Python code. No markdown backticks.
+    10. STRICTLY FORBIDDEN LIBRARIES: You will crash the system if you import 'scipy', 'statsmodels', 'sklearn', or 'seaborn'. Use ONLY standard Pandas and math.
+    11. EXACT COLUMN NAMES: You MUST use the exact column names as shown in the 'COLUMN HEADERS'. Do not guess.
     """
     try:
         result = structured_llm.invoke(prompt)
@@ -154,11 +161,21 @@ def executor_node(state: AgentState):
 def Reporter_node(state: AgentState):
     hypotheses = state.get('hypotheses')
     execution_results = state.get('execution_results')
+    
     prompt = f"""
-    You are an Executive Business Analyst. Write a polished Markdown report based on this data:
-    Hypotheses: {hypotheses}
-    Results: {execution_results}
-    Format beautifully with headers and bullet points. Do not mention code.
+    You are an elite Executive Business Analyst. Write a polished, hardcore data-driven Markdown report based strictly on the following data:
+    
+    Hypotheses Tested: {hypotheses}
+    Data Results: {execution_results}
+    
+    CRITICAL CONSTRAINTS:
+    1. NO FLUFF: Do not write theoretical "actionable steps" or suggest "algorithms to implement." You must report on the ACTUAL numbers, correlations, and metrics found in the 'Data Results'.
+    2. REQUIRED SECTIONS: Format the report strictly with these headers: 
+       - 'Executive Summary'
+       - 'Key Data Insights' (List the hard numbers and metrics discovered)
+       - 'Anomalies & Risks' (Detail the specific anomalies found)
+       - 'Strategic Recommendations' (Based ONLY on the actual data results)
+    3. Do not mention code, Python, dataframes, or how the data was processed.
     """
     try:
         result = llm.invoke(prompt)
