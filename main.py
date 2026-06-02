@@ -187,18 +187,23 @@ def Reporter_node(state: AgentState):
 
 def automator_node(state: AgentState):
     print("Triggering Make.com Webhook...")
+    
     anomalies = state.get('anomalies', [])
     at_risk_customers = state.get('at_risk_customers', [])
+    if not anomalies or len(anomalies) == 0:
+        anomalies = ["✅ No critical anomalies detected."]
+        
+    if not at_risk_customers or len(at_risk_customers) == 0:
+        at_risk_customers = ["✅ No at-risk campaigns or entities detected."]
+
     make_webhook_url = os.getenv("MAKE_WEBHOOK_URL")
-    
     if not make_webhook_url:
         return {"automation_status": "Make.com Webhook URL not configured."}
-
     try:
         raw_payload = {"anomalies": anomalies, "at_risk_customers": at_risk_customers}
         safe_payload = json.loads(json.dumps(raw_payload, default=str))
         response = requests.post(make_webhook_url, json=safe_payload)
         response.raise_for_status()
-        return {"automation_status": f"Sent {len(anomalies)} anomalies and {len(at_risk_customers)} at-risk customers to Make.com."}
+        return {"automation_status": "Make.com webhook triggered successfully!"}
     except Exception as e:
-        return {"automation_status": f"Failed to trigger Make.com: {e}"}
+        return {"automation_status": f"Webhook failed: {e}"}
