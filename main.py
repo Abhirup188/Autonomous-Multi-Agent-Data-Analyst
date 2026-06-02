@@ -95,13 +95,15 @@ def CoderNode(state: AgentState):
     3. Do NOT use `print()` statements. 
     4. Store analytical answers in a dictionary/string named exactly: `analysis_results`.
     
-    5. DATA ANOMALY DETECTION (DYNAMIC): 
-    - You MUST detect anomalies using the Z-Score method across ALL numeric columns (> 3.0 or < -3.0).
-    - CRITICAL: Calculate Z-scores manually using Pandas: `(df[col] - df[col].mean()) / df[col].std()`. Do NOT use scipy.
-    - If you find an anomaly, create a human-readable string explaining exactly what the anomaly is.
-    - CRITICAL: NEVER use dataframe row numbers or the word "index". You MUST extract the exact Date, Platform, and Country from that row to provide business context.
-    - CRITICAL: You must limit your output to ONLY the TOP 5 most extreme anomalies. Store these in a list named exactly: anomalies_list. If data is clean, assign [].
-    
+    5. DATA ANOMALY DETECTION (BUSINESS LOGIC): 
+    - IGNORE individual item quantity fluctuations (e.g., ignore if a customer buys 2 units instead of 1).
+    - YOU MUST DETECT ANOMALIES BASED ON BUSINESS RISK:
+      a) AOV DROP: Calculate the mean 'Total Price Usd' per 'Gateway'. Flag any gateway where the AOV drops >30% compared to the overall mean.
+      b) TAX DISCREPANCIES: Calculate the ratio of 'Total Tax' to 'Total Price Usd'. Flag any transaction where this ratio deviates more than 5% from the global median tax ratio (e.g., potential tax calculation error).
+      c) MARKET OUTLIERS: Flag any orders where the 'Billing Address Country' is not 'United States' (if US is the target market).
+    - CRITICAL: For each anomaly, output a clear string (e.g., "AOV ALERT: PayPal gateway AOV dropped 35% below mean").
+    - CRITICAL: Limit to the TOP 5 most critical anomalies. Store in `anomalies_list`.
+
     6. "AT-RISK" ENTITY DETECTION (DYNAMIC):
     - Identify entities that are performing poorly based on the context of the data. If the dataset lacks 'Customers', evaluate campaigns, products, or regions.
     - CRITICAL: You must limit your output to ONLY the TOP 5 worst-performing entities. Store descriptive strings in a list named exactly: at_risk_customers_list. Assign [] if none exist.
