@@ -19,7 +19,7 @@ System Architecture (LangGraph)
 6. Automator Node: Triggers third-party webhooks (Slack/CRM) for critical data anomalies.
 
 Demo Video:
-https://drive.google.com/file/d/1vmDhYVjrCfH3eJn1g9JYMzz-d104sGnJ/view?usp=sharing
+https://www.loom.com/share/0a5d207f397844939d61f3384adaf490
 
 Installation & Setup
 
